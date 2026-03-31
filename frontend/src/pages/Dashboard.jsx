@@ -18,13 +18,13 @@ function Dashboard() {
   const [notes, setNotes] = useState("");
 
   const loadData = async () => {
-    const c = await api.get("/clinicians");
-    const p = await api.get("/patients");
-    const v = await api.get("/visits");
+    const clinicians = await api.get("/clinicians");
+    const patients = await api.get("/patients");
+    const visits = await api.get("/visits");
 
-    setClinicians(c.data);
-    setPatients(p.data);
-    setVisits(v.data);
+    setClinicians(clinicians);
+    setPatients(patients);
+    setVisits(visits);
   };
 
   useEffect(() => {
@@ -32,28 +32,42 @@ function Dashboard() {
   }, []);
 
   const addClinician = async () => {
-    await api.post("/clinicians", { name: clinicianName });
-    setClinicianName("");
-    loadData();
+    try {
+      await api.post("/clinicians", { name: clinicianName });
+      setClinicianName("");
+      await loadData();
+    } catch (error) {
+      console.error("Error adding clinician", error);
+      alert("Failed to add clinician");
+    }
   };
 
   const addPatient = async () => {
-    await api.post("/patients", { name: patientName });
-    setPatientName("");
-    loadData();
+    try {
+      await api.post("/patients", { name: patientName });
+      setPatientName("");
+      await loadData();
+    } catch (error) {
+      alert("Failed to add patient");
+    }
   };
 
   const addVisit = async () => {
-    await api.post("/visits", {
-      clinicianId,
-      patientId,
-      notes,
-    });
-    loadData();
+    try {
+      await api.post("/visits", {
+        clinicianId,
+        patientId,
+        notes,
+      });
+      setNotes("");
+      await loadData();
+    } catch (error) {
+      alert("Failed to create visit");
+    }
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen pb-10">
       <Header />
 
       <div className="max-w-6xl mx-auto p-6 grid grid-cols-2 gap-6">
@@ -64,7 +78,9 @@ function Dashboard() {
               onChange={(e) => setClinicianName(e.target.value)}
               placeholder="Clinician name"
             />
-            <Button onClick={addClinician}>Add</Button>
+            <Button onClick={addClinician} disabled={!clinicianName}>
+              Add Clinician
+            </Button>
           </div>
         </Card>
 
@@ -75,7 +91,9 @@ function Dashboard() {
               onChange={(e) => setPatientName(e.target.value)}
               placeholder="Patient name"
             />
-            <Button onClick={addPatient}>Add</Button>
+            <Button onClick={addPatient} disabled={!patientName}>
+              Add Patient
+            </Button>
           </div>
         </Card>
 
@@ -109,8 +127,9 @@ function Dashboard() {
               placeholder="Notes"
               onChange={(e) => setNotes(e.target.value)}
             />
-
-            <Button onClick={addVisit}>Create Visit</Button>
+            <Button onClick={addVisit} disabled={!notes}>
+              Create Visit
+            </Button>
           </div>
         </Card>
 
@@ -125,11 +144,18 @@ function Dashboard() {
 
       <div className="max-w-6xl mx-auto px-6 pb-10">
         <h2 className="text-lg font-semibold mb-4">Recent Visits</h2>
-        <div className="space-y-3">
-          {visits.map((v) => (
-            <VisitCard key={v.id} visit={v} />
-          ))}
-        </div>
+
+        {visits.length === 0 ? (
+          <div className="bg-white p-6 rounded-xl shadow-sm text-gray-400 text-center">
+            No visits recorded yet
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visits.map((v) => (
+              <VisitCard key={v.id} visit={v} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
