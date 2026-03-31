@@ -59,6 +59,8 @@ function Dashboard() {
         patientId,
         notes,
       });
+      setClinicianId("");
+      setPatientId("");
       setNotes("");
       await loadData();
     } catch (error) {
@@ -101,9 +103,10 @@ function Dashboard() {
           <div className="space-y-3">
             <select
               className="w-full border rounded-lg p-2"
+              value={clinicianId}
               onChange={(e) => setClinicianId(e.target.value)}
             >
-              <option>Select Clinician</option>
+              <option value="">Select Clinician</option>
               {clinicians.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -113,9 +116,10 @@ function Dashboard() {
 
             <select
               className="w-full border rounded-lg p-2"
+              value={patientId}
               onChange={(e) => setPatientId(e.target.value)}
             >
-              <option>Select Patient</option>
+              <option value="">Select Patient</option>
               {patients.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -125,9 +129,14 @@ function Dashboard() {
 
             <Input
               placeholder="Notes"
+              value={notes}
               onChange={(e) => setNotes(e.target.value)}
             />
-            <Button onClick={addVisit} disabled={!notes}>
+
+            <Button
+              onClick={addVisit}
+              disabled={!clinicianId || !patientId || !notes}
+            >
               Create Visit
             </Button>
           </div>
