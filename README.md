@@ -81,3 +81,13 @@ Backend runs on: http://localhost:5000
 * Search & filtering
 * Deployment (Docker / Cloud)
 * Automated testing
+
+
+## Design Decisions
+
+* I used a layered backend architecture (routes, controllers, services) to separate concerns and improve maintainability.
+* Prisma ORM was used for database access and relational mapping between clinicians, patients, and visits.
+* SQLite was chosen for quick local setup and simplicity for a small project.
+* The frontend was built using a component-based architecture with reusable UI components.
+* Tailwind CSS was used to quickly build a clean and modern healthcare-style UI.
+* Visits are displayed in reverse chronological order using the createdAt timestamp.
