@@ -51,7 +51,7 @@ patient-visit-tracker
 cd backend
 npm install
 npx prisma migrate dev
-node src/server.js
+node src/server.js OR npm run dev
 ```
 
 ### Frontend
